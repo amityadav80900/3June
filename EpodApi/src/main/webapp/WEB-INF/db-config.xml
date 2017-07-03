@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd">
+   <context:annotation-config/>
+   <context:component-scan base-package="com.icl.epod.*"/>
+  <context:property-placeholder location="file:///${catalina.home}/webapps/EpodAPI.properties"/> 
+  <context:property-placeholder location="file:///${catalina.home}/webapps/log4j.properties"/>
+  
+ 	 
+	<!--  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>classpath:EpodAPI.properties</value>
+			<value>classpath:log4j.properties</value>
+		</property>
+	</bean>  -->
+	
+	<!-- DataSource -->		
+	 <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${database.driverClass}" />
+        <property name="url" value="${database.url}" />
+        <property name="username" value="${database.username}" />
+        <property name="password" value="${database.password}" /> 
+</bean>
+
+	<!-- Hibernate SessionFactory -->	
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" >
+	    <property name="dataSource" ref="dataSource"/>
+	    <property name="hibernateProperties">
+			<props>
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+                <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+                <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+               
+            </props>
+	    </property>
+       <property name="packagesToScan" value="com.icl.epod.entity"></property>          
+	</bean>	
+	
+	
+	  <!-- Transaction -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	    <property name="sessionFactory" ref="sessionFactory" />
+	</bean>		
+</beans> 
